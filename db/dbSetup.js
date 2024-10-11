@@ -66,18 +66,69 @@ CREATE TABLE game_platforms (
 `;
 
 const setupValues = `
+INSERT INTO platforms (name, manufacturer)
+VALUES 
+    ('PlayStation 5', 'Sony'),
+    ('Xbox Series X', 'Microsoft'),
+    ('Nintendo Switch', 'Nintendo'),
+    ('PC', 'Various');
 
+INSERT INTO esrb_ratings (name, description)
+VALUES 
+    ('E', 'Everyone'),
+    ('E10+', 'Everyone 10+'),
+    ('T', 'Teen'),
+    ('M', 'Mature'),
+    ('AO', 'Adults Only'),
+    ('RP', 'Rating Pending');
 `
 
 const checkTableSQL = `
-
+SELECT 
+    CASE 
+        WHEN EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'platforms'
+        ) AND EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'esrb_ratings'
+        ) AND EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'genres'
+        ) AND EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'studios'
+        ) AND EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'series'
+        ) AND EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'video_games'
+        ) AND EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'game_genres'
+        ) AND EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'game_platforms'
+        )
+        THEN TRUE
+        ELSE FALSE
+    END AS all_tables_exist;
 `;
 
 async function setupDatabase() {
   console.log("Setting up database...");
   
   try {
-
+    const res = await pool.query(checkTableSQL)
+    const allTablesExist = res.rows[0].all_tables_exist
+    if (!allTablesExist) {
+      console.log("The tables do not exist. Creating...");
+      await pool.query(createTableSQL);
+      console.log("Tables created successfully.");
+    } else {
+      console.log("Tables already exists. Skipping creation.");
+    }
   } catch (err) {
     throw new AppError('Database setup failed', 500, err);
   }
