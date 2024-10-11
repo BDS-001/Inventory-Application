@@ -21,8 +21,7 @@ CREATE TABLE genres (
 
 CREATE TABLE studios (
     studio_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    type ENUM('Developer', 'Publisher', 'Both') NOT NULL
+    name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE series (

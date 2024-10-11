@@ -1,12 +1,14 @@
 // --- Imports and Configuration ---
 require("dotenv").config();
 const express = require("express");
-const errorHandler = require('./middleware/errorHandler');
-const AppError = require('./utils/customErrors');
-const {setupDatabase} = require('./db/dbSetup')
 const path = require("node:path");
-
 const app = express();
+const AppError = require('./utils/customErrors');
+const errorHandler = require('./middleware/errorHandler');
+const {setupDatabase} = require('./db/dbSetup')
+
+// --- Route Imports ---
+const indexRouter = require('./routes/indexRouter')
 
 // --- View Engine Setup ---
 app.set("views", path.join(__dirname, "views"));
