@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Routes ---
-
+app.use('/', indexRouter)
 
 // 404 handler
 app.use((req, res, next) => {

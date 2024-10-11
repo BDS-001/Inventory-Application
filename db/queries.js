@@ -1,5 +1,10 @@
 const pool = require("./pool");
 
-module.exports = {
+async function getAllVideoGames() {
+    const { rows } = await pool.query("SELECT * FROM video_games");
+    return rows;
+  }
 
+module.exports = {
+    getAllVideoGames,
 };
