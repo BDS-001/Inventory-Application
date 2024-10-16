@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Game</title>
+</head>
+<body>
+    <h1>Add New Game</h1>
+    <form action="/add-game" method="POST">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+
+        <label for="release_date">Release Date:</label>
+        <input type="date" id="release_date" name="release_date"><br><br>
+
+        <label for="platform_id">Primary Platform:</label>
+        <select id="platform_id" name="platform_id">
+            <% platforms.forEach(platform => { %>
+                <option value="<%= platform.platform_id %>"><%= platform.name %></option>
+            <% }); %>
+        </select><br><br>
+
+        <label for="developer_id">Developer:</label>
+        <select id="developer_id" name="developer_id">
+            <% studios.forEach(studio => { %>
+                <option value="<%= studio.studio_id %>"><%= studio.name %></option>
+            <% }); %>
+        </select><br><br>
+
+        <label for="publisher_id">Publisher:</label>
+        <select id="publisher_id" name="publisher_id">
+            <% studios.forEach(studio => { %>
+                <option value="<%= studio.studio_id %>"><%= studio.name %></option>
+            <% }); %>
+        </select><br><br>
+
+        <label for="series_id">Series:</label>
+        <select id="series_id" name="series_id">
+            <option value="">None</option>
+            <% series.forEach(s => { %>
+                <option value="<%= s.series_id %>"><%= s.name %></option>
+            <% }); %>
+        </select><br><br>
+
+        <label for="esrb_rating_id">ESRB Rating:</label>
+        <select id="esrb_rating_id" name="esrb_rating_id">
+            <% esrbRatings.forEach(rating => { %>
+                <option value="<%= rating.rating_id %>"><%= rating.name %></option>
+            <% }); %>
+        </select><br><br>
+
+        <label>Genres:</label><br>
+        <% genres.forEach(genre => { %>
+            <input type="checkbox" id="genre_<%= genre.genre_id %>" name="genres[]" value="<%= genre.genre_id %>">
+            <label for="genre_<%= genre.genre_id %>"><%= genre.name %></label><br>
+        <% }); %>
+        <br>
+
+        <label>Additional Platforms:</label><br>
+        <% platforms.forEach(platform => { %>
+            <input type="checkbox" id="platform_<%= platform.platform_id %>" name="additional_platforms[]" value="<%= platform.platform_id %>">
+            <label for="platform_<%= platform.platform_id %>"><%= platform.name %></label>
+            <input type="date" name="platform_release_date_<%= platform.platform_id %>"><br>
+        <% }); %>
+        <br>
+
+        <input type="submit" value="Add Game">
+    </form>
+</body>
+</html>

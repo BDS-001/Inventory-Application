@@ -42,6 +42,27 @@ async function getAllVideoGames() {
     return rows;
 }
 
+const allowedTables = ['platforms', 'studios', 'genres', 'esrb_ratings'];
+
+async function getAllFromTable(tableName) {
+  if (!allowedTables.includes(tableName)) {
+    throw new Error(`Invalid table name: ${tableName}`);
+  }
+  
+  try {
+    const { rows } = await pool.query(`SELECT * FROM ${tableName}`);
+    return rows;
+  } catch (error) {
+    console.error(`Error fetching data from ${tableName}:`, error);
+    throw error;
+  }
+}
+
+const getAllPlatforms = () => getAllFromTable('platforms');
+const getAllStudios = () => getAllFromTable('studios');
+const getAllGenres = () => getAllFromTable('genres');
+const getAllRatings = () => getAllFromTable('esrb_ratings');
+
 async function getVideoGameById (IDENTITY) {
   const { rows } = await pool.query("SELECT * FROM video_games WHERE video_games.id = $1", [id]);
   return rows;
