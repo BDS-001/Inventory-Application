@@ -42,7 +42,7 @@ async function getAllVideoGames() {
     return rows;
 }
 
-const allowedTables = ['platforms', 'studios', 'genres', 'esrb_ratings'];
+const allowedTables = ['platforms', 'studios', 'genres', 'esrb_ratings', 'series'];
 
 async function getAllFromTable(tableName) {
   if (!allowedTables.includes(tableName)) {
@@ -62,6 +62,7 @@ const getAllPlatforms = () => getAllFromTable('platforms');
 const getAllStudios = () => getAllFromTable('studios');
 const getAllGenres = () => getAllFromTable('genres');
 const getAllRatings = () => getAllFromTable('esrb_ratings');
+const getAllSeries = () => getAllFromTable('series');
 
 async function getVideoGameById (IDENTITY) {
   const { rows } = await pool.query("SELECT * FROM video_games WHERE video_games.id = $1", [id]);
@@ -75,4 +76,9 @@ async function insertVideoGame(title , description, release_date, platform_id, d
 
 module.exports = {
     getAllVideoGames,
+    getAllPlatforms,
+    getAllStudios,
+    getAllGenres,
+    getAllRatings,
+    getAllSeries
 };
