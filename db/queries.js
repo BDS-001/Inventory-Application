@@ -12,7 +12,7 @@ async function getAllVideoGames() {
       s.name AS series,
       er.name AS esrb_rating,
       STRING_AGG(DISTINCT g.name, ', ') AS genres,
-      STRING_AGG(DISTINCT gp.platform_id::TEXT || ':' || p_all.name || ' (' || gp.release_date::TEXT || ')', ', ') AS all_platforms
+      STRING_AGG(DISTINCT p_all.name, ', ') AS all_platforms
     FROM 
         video_games vg
     LEFT JOIN 
