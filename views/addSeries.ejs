@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Series</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label, input, button {
+            margin-bottom: 10px;
+        }
+        input, button {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add New Series</h1>
+    <% if (errors && errors.length > 0) { %>
+        <div class="errors">
+          <% errors.forEach(error => { %>
+            <p><%= error.msg %></p>
+          <% }) %>
+        </div>
+      <% } %>
+      <form action="/addSeries" method="POST">
+        <label for="name">Series Name:</label>
+        <input type="text" id="name" name="name" value="<%= locals.oldInput ? oldInput.name : '' %>" required maxlength="100">
+        <button type="submit">Add Series</button>
+      </form>
+</body>
+</html>

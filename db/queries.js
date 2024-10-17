@@ -68,6 +68,10 @@ async function insertStudio(name) {
   await pool.query("INSERT INTO studios (name) VALUES ($1)", [name]);
 }
 
+async function insertSeries(name) {
+  await pool.query("INSERT INTO series (name) VALUES ($1)", [name]);
+}
+
 async function getVideoGameById (id) {
   const { rows } = await pool.query("SELECT * FROM video_games WHERE video_games.id = $1", [id]);
   return rows;
@@ -85,5 +89,6 @@ module.exports = {
     getAllGenres,
     getAllRatings,
     getAllSeries,
-    insertStudio
-};
+    insertStudio,
+    insertSeries,
+}
