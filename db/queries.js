@@ -64,7 +64,11 @@ const getAllGenres = () => getAllFromTable('genres');
 const getAllRatings = () => getAllFromTable('esrb_ratings');
 const getAllSeries = () => getAllFromTable('series');
 
-async function getVideoGameById (IDENTITY) {
+async function insertStudio(name) {
+  await pool.query("INSERT INTO studios (name) VALUES ($1)", [name]);
+}
+
+async function getVideoGameById (id) {
   const { rows } = await pool.query("SELECT * FROM video_games WHERE video_games.id = $1", [id]);
   return rows;
 }
@@ -80,5 +84,6 @@ module.exports = {
     getAllStudios,
     getAllGenres,
     getAllRatings,
-    getAllSeries
+    getAllSeries,
+    insertStudio
 };
