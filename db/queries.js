@@ -76,7 +76,7 @@ async function insertIntoTable(tableName, name) {
   }
 
   try {
-    await pool.query(`INSERT INTO ${tableName} (name) VALUES ($1)`, [name]);
+    await pool.query(`INSERT INTO ${tableName} (name) VALUES ($1) RETURNING *;`, [name]);
   } catch (error) {
     console.error(`Error inserting into ${tableName}:`, error);
     throw error;
