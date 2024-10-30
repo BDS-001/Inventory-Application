@@ -48,8 +48,8 @@ async function getVideoGameById (id) {
   return rows;
 }
 
-async function insertVideoGame(title , description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) {
-  await pool.query("INSERT INTO video_games (title , description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [title , description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id]);
+async function insertVideoGame(gameData) {
+  await pool.query("INSERT INTO video_games (title , description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [gameData.title , gameData.description, gameData.release_date, gameData.platform_id, gameData.developer_id, gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]);
 }
 
 

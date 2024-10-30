@@ -4,63 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Game</title>
+    <script src="../public/scripts/showForm.js"></script>
 </head>
 <body>
     <h1>Add New Game</h1>
     <form action="/add-game" method="POST">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required><br><br>
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
         
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" cols="50"></textarea>
+        </div>
         
-        <label for="release_date">Release Date:</label>
-        <input type="date" id="release_date" name="release_date"><br><br>
+        <div class="form-group">
+            <label for="release_date">Release Date:</label>
+            <input type="date" id="release_date" name="release_date">
+        </div>
         
-        <label for="developer_id">Developer:</label>
-        <select id="developer_id" name="developer_id">
-            <% studios.forEach(studio => { %>
-                <option value="<%= studio.studio_id %>"><%= studio.name %></option>
-            <% }); %>
-        </select><br><br>
+        <div class="form-group">
+            <label for="developer_id">Developer:</label>
+            <select id="developer_id" name="developer_id">
+                <% studios.forEach(studio => { %>
+                    <option value="<%= studio.studio_id %>"><%= studio.name %></option>
+                <% }); %>
+            </select>
+            <button>Add Studio</button>
+        </div>
         
-        <label for="publisher_id">Publisher:</label>
-        <select id="publisher_id" name="publisher_id">
-            <% studios.forEach(studio => { %>
-                <option value="<%= studio.studio_id %>"><%= studio.name %></option>
-            <% }); %>
-        </select><br><br>
+        <div class="form-group">
+            <label for="publisher_id">Publisher:</label>
+            <select id="publisher_id" name="publisher_id">
+                <% studios.forEach(studio => { %>
+                    <option value="<%= studio.studio_id %>"><%= studio.name %></option>
+                <% }); %>
+            </select>
+            <button>Add Studio</button>
+        </div>
         
-        <label for="series_id">Series:</label>
-        <select id="series_id" name="series_id">
-            <option value="">None</option>
-            <% series.forEach(s => { %>
-                <option value="<%= s.series_id %>"><%= s.name %></option>
-            <% }); %>
-        </select><br><br>
+        <div class="form-group">
+            <label for="series_id">Series:</label>
+            <select id="series_id" name="series_id">
+                <option value="">None</option>
+                <% series.forEach(s => { %>
+                    <option value="<%= s.series_id %>"><%= s.name %></option>
+                <% }); %>
+            </select>
+            <button>Add Series</button>
+        </div>
         
-        <label for="esrb_rating_id">ESRB Rating:</label>
-        <select id="esrb_rating_id" name="esrb_rating_id">
-            <% esrbRatings.forEach(rating => { %>
-                <option value="<%= rating.rating_id %>"><%= rating.name %></option>
-            <% }); %>
-        </select><br><br>
+        <div class="form-group">
+            <label for="esrb_rating_id">ESRB Rating:</label>
+            <select id="esrb_rating_id" name="esrb_rating_id">
+                <% esrbRatings.forEach(rating => { %>
+                    <option value="<%= rating.rating_id %>"><%= rating.name %></option>
+                <% }); %>
+            </select>
+        </div>
         
-        <label>Genres:</label><br>
-        <% genres.forEach(genre => { %>
-            <input type="checkbox" id="genre_<%= genre.genre_id %>" name="genres[]" value="<%= genre.genre_id %>">
-            <label for="genre_<%= genre.genre_id %>"><%= genre.name %></label><br>
-        <% }); %>
-        <br>
+        <div class="form-group">
+            <label>Genres:</label>
+            <div class="checkbox-group">
+                <% genres.forEach(genre => { %>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="genre_<%= genre.genre_id %>" name="genres[]" value="<%= genre.genre_id %>">
+                        <label for="genre_<%= genre.genre_id %>"><%= genre.name %></label>
+                    </div>
+                <% }); %>
+            </div>
+            <button>Add Genre</button>
+        </div>
         
-        <label>Platforms:</label><br>
-        <% platforms.forEach(platform => { %>
-            <input type="checkbox" id="platform_<%= platform.platform_id %>" name="platforms[]" value="<%= platform.platform_id %>">
-            <label for="platform_<%= platform.platform_id %>"><%= platform.name %></label><br>
-        <% }); %>
-        <br>
+        <div class="form-group">
+            <label>Platforms:</label>
+            <div class="checkbox-group">
+                <% platforms.forEach(platform => { %>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="platform_<%= platform.platform_id %>" name="platforms[]" value="<%= platform.platform_id %>">
+                        <label for="platform_<%= platform.platform_id %>"><%= platform.name %></label>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
         
-        <input type="submit" value="Add Game">
+        <div class="form-group">
+            <input type="submit" value="Add Game">
+        </div>
     </form>
+
+    <%- include('./partials/addGenre') %>
 </body>
 </html>
