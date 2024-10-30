@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Game</title>
     <script src="/scripts/showForm.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <h1>Add New Game</h1>
@@ -94,8 +95,8 @@
         </div>
     </form>
 
-    <%- include('partials/addGenre') %>
-    <%- include('partials/addSeries') %>
-    <%- include('partials/addStudio') %>
+    <div class="subForm"><%- include('partials/addGenre') %></div>
+    <div class="subForm"><%- include('partials/addSeries') %></div>
+    <div class="subForm"><%- include('partials/addStudio') %></div>
 </body>
 </html>
