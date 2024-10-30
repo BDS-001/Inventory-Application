@@ -26,7 +26,7 @@ async function postAddGenre(req, res, next) {
         }
         const name = req.body.name;
         await db.insertGenre(name);
-        res.redirect('/');
+        res.redirect('/addGame');
     } catch (error) {
         console.error('Error adding genre:', error);
         next(new AppError('An error occurred while adding the genre', 500));
