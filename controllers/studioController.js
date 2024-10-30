@@ -27,7 +27,7 @@ async function postAddStudio(req, res, next) {
 
         const name = req.body.name;
         await db.insertStudio(name);
-        res.redirect('/');
+        res.redirect('/addGame');
     } catch (error) {
         console.error('Error adding studio:', error);
         next(new AppError('An error occurred while adding the studio', 500));
