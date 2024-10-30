@@ -27,7 +27,7 @@ async function postAddSeries(req, res, next) {
 
         const name = req.body.name;
         await db.insertSeries(name);
-        res.redirect('/');
+        res.redirect('/addGame');
     } catch (error) {
         console.error('Error adding series:', error);
         next(new AppError('An error occurred while adding the series', 500));

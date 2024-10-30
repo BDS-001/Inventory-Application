@@ -1,0 +1,6 @@
+<h1>Add New Series</h1>
+<form action="/addSeries" method="POST">
+    <label for="name">Series Name:</label>
+    <input type="text" id="name" name="name" value="<%= locals.oldInput ? oldInput.name : '' %>" required maxlength="100">
+    <button type="submit">Add Series</button>
+</form>
