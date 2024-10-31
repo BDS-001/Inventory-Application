@@ -116,8 +116,6 @@ module.exports = {
     insertSeries,
     insertGenre,
     insertVideoGame,
-    getGenreByName,
-    getPlatformByName,
     insertIntoGameGenres,
     insertIntoGamePlatforms
 }
