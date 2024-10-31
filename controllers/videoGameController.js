@@ -4,14 +4,16 @@ const AppError = require('../utils/customErrors');
 
 async function getGames(req, res, next) {
     try {
+        console.log('Attempting to get games');
         const games = await db.getAllVideoGames();
+        console.log('Games fetched:', games);
         res.render('index', {
             pageTitle: 'Video Game Inventory', 
             games: games
         });
     } catch (error) {
-        console.error('Error fetching games:', error);
-        next(new AppError('Failed to load games', 500));
+        console.error('Error in getGames:', error);
+        next(error);
     }
 }
 

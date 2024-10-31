@@ -24,8 +24,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter)
 
 // 404 handler
-app.use((req, res, next) => {
-    next(new AppError("ERROR 404 Webpage does not exist", 404));
+app.all('*', (req, res, next) => {
+    if (!res.headersSent) {
+        next(new AppError("ERROR 404 Webpage does not exist", 404));
+    }
 });
 
 // --- Error Handling Middleware ---
