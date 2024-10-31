@@ -37,9 +37,13 @@ const validateGame = [
     body('publisher_id')
         .isInt().withMessage('Invalid publisher')
         .notEmpty().withMessage('Publisher is required'),
-    body('series_id')
-        .optional({ nullable: true })
-        .isInt().withMessage('Invalid series'),
+        body('series_id')
+        .optional({ nullable: true, checkFalsy: true })
+        .custom((value) => {
+            if (value === '') return true;
+            return !isNaN(parseInt(value));
+        })
+        .withMessage('Invalid series'),
     body('esrb_rating_id')
         .isInt().withMessage('Invalid ESRB rating')
         .notEmpty().withMessage('ESRB rating is required'),
@@ -85,17 +89,22 @@ async function postAddGame(req, res, next) {
             platforms: req.body.platforms,
             genres: req.body.genres 
         };
-        const videoGame = await db.insertVideoGame(gameData);
-        const genreData = await Promise.all(gameData.genres.map(genre => db.getGenreByName(genre)));
-        const platformData = await Promise.all(gameData.platforms.map(platform => db.getPlatformByName(platform)));
-        
-        await Promise.all(genreData.map(genre => 
-            db.insertIntoGameGenres(videoGame.game_id, genre.genre_id)
-        ));
- 
-        await Promise.all(platformData.map(platform =>
-            db.insertIntoGamePlatforms(videoGame.game_id, platform.platform_id, gameData.release_date)
-        ));
+        console.log('Inserting game with data:', gameData);
+
+        const result = await db.insertVideoGame(gameData);
+        const videoGame = result.rows[0];
+
+        console.log('Inserted game:', videoGame);
+
+        if (videoGame && videoGame.game_id) {
+            await Promise.all(gameData.genres.map(genreId => 
+                db.insertIntoGameGenres(videoGame.game_id, genreId)
+            ));
+    
+            await Promise.all(gameData.platforms.map(platformId =>
+                db.insertIntoGamePlatforms(videoGame.game_id, platformId, gameData.release_date)
+            ));
+        }
 
         res.redirect('/');
         
