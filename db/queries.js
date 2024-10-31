@@ -49,11 +49,25 @@ async function getVideoGameById (id) {
 }
 
 async function insertVideoGame(gameData) {
-  await pool.query("INSERT INTO video_games (title , description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [gameData.title , gameData.description, gameData.release_date, gameData.platform_id, gameData.developer_id, gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]);
+  await pool.query("INSERT INTO video_games (title, description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [gameData.title, gameData.description, gameData.release_date, gameData.platform_id, gameData.developer_id, gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]);
 }
 
 
 // --- Simple Table Queries ---
+async function getGenreByName(name) {
+  return await pool.query("SELECT * FROM genres WHERE name = $1", [name]);
+}
+async function getPlatformByName(name) {
+  return await pool.query("SELECT * FROM platforms WHERE name = $1", [name]);
+}
+
+async function insertIntoGameGenres(game_id, genre_id) {
+  return await pool.query("INSERT INTO game_genres (game_id, genre_id) VALUES ($1, $2)", [game_id, genre_id]);
+}
+
+async function insertIntoGamePlatforms(game_id, platform_id, release_date) {
+  return await pool.query("INSERT INTO game_platforms (game_id, platform_id, release_date) VALUES ($1, $2, $3)", [game_id, platform_id, release_date]);
+}
 const allowedTables = ['platforms', 'studios', 'genres', 'esrb_ratings', 'series'];
 
 async function getAllFromTable(tableName) {
@@ -107,5 +121,10 @@ module.exports = {
     getAllSeries,
     insertStudio,
     insertSeries,
-    insertGenre
+    insertGenre,
+    insertVideoGame,
+    getGenreByName,
+    getPlatformByName,
+    insertIntoGameGenres,
+    insertIntoGamePlatforms
 }

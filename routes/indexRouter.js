@@ -6,6 +6,7 @@ const genreController = require('../controllers/genreController');
 
 router.get("/", videoGameController.getGames);
 router.get('/addGame', videoGameController.getAddGame)
+router.post('/addGame', videoGameController.validateGame, videoGameController.postAddGame)
 
 router.get('/addStudio', studioController.getAddStudio)
 router.post('/addStudio', studioController.validateStudio, studioController.postAddStudio);
