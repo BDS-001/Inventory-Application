@@ -2,9 +2,17 @@ const db = require("../db/queries");
 const { body, validationResult } = require('express-validator');
 const AppError = require('../utils/customErrors');
 
-async function getGames(req, res) {
-    const games = await db.getAllVideoGames()
-    res.render('index', {pageTitle: 'Video Game Inventory', games: games})
+async function getGames(req, res, next) {
+    try {
+        const games = await db.getAllVideoGames();
+        res.render('index', {
+            pageTitle: 'Video Game Inventory', 
+            games: games
+        });
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        next(new AppError('Failed to load games', 500));
+    }
 }
 
 async function getAddGame(req, res) {
