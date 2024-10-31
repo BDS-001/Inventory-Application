@@ -32,7 +32,7 @@
                     <option value="<%= studio.studio_id %>"><%= studio.name %></option>
                 <% }); %>
             </select>
-            <button>Add Studio</button>
+            <button  data-form="studio" class="showSubForm">Add Studio</button>
         </div>
         
         <div class="form-group">
@@ -42,7 +42,7 @@
                     <option value="<%= studio.studio_id %>"><%= studio.name %></option>
                 <% }); %>
             </select>
-            <button>Add Studio</button>
+            <button data-form="studio" class="showSubForm">Add Studio</button>
         </div>
         
         <div class="form-group">
@@ -53,7 +53,7 @@
                     <option value="<%= s.series_id %>"><%= s.name %></option>
                 <% }); %>
             </select>
-            <button>Add Series</button>
+            <button data-form="series" class="showSubForm">Add Series</button>
         </div>
         
         <div class="form-group">
@@ -75,7 +75,7 @@
                     </div>
                 <% }); %>
             </div>
-            <button>Add Genre</button>
+            <button data-form="genre" class="showSubForm">Add Genre</button>
         </div>
         
         <div class="form-group">
@@ -95,8 +95,8 @@
         </div>
     </form>
 
-    <div class="subForm"><%- include('partials/addGenre') %></div>
-    <div class="subForm"><%- include('partials/addSeries') %></div>
-    <div class="subForm"><%- include('partials/addStudio') %></div>
+    <div class="subForm" data-form="genre"><%- include('partials/addGenre') %></div>
+    <div class="subForm" data-form="series"><%- include('partials/addSeries') %></div>
+    <div class="subForm" data-form="studio"><%- include('partials/addStudio') %></div>
 </body>
 </html>
