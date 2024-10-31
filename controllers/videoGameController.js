@@ -8,14 +8,42 @@ async function getGames(req, res) {
 }
 
 async function getAddGame(req, res) {
+    try {
+        const [platforms, genres, studios, esrbRatings, series] = await Promise.all([
+            db.getAllPlatforms(),
+            db.getAllGenres(),
+            db.getAllStudios(),
+            db.getAllRatings(),
+            db.getAllSeries()
+        ]);
 
-    const platforms = await db.getAllPlatforms()
-    const genres = await db.getAllGenres()
-    const studios = await db.getAllStudios()
-    const esrbRatings = await db.getAllRatings()
-    const series = await db.getAllSeries()
-
-    res.render('addGame', {pageTitle: 'Video Game Inventory', platforms, genres, studios, esrbRatings, series})
+        res.render('addGame', {
+            pageTitle: 'Video Game Inventory', 
+            platforms, 
+            genres, 
+            studios, 
+            esrbRatings, 
+            series,
+            errors: [],
+            oldInput: {
+                title: '',
+                description: '',
+                release_date: '',
+                developer_id: '',
+                publisher_id: '',
+                series_id: '',
+                esrb_rating_id: '',
+                genres: [],
+                platforms: []
+            }
+        });
+    } catch (error) {
+        console.error('Error in getAddGame:', error);
+        res.status(500).render('error', {
+            pageTitle: 'Error',
+            message: 'Failed to load add game form'
+        });
+    }
 }
 
 const validateGame = [

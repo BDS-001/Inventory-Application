@@ -9,58 +9,94 @@
 </head>
 <body>
     <h1>Add New Game</h1>
+
+    <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+        <div class="error-messages">
+            <ul>
+                <% errors.forEach(error => { %>
+                    <li><%= error.msg %></li>
+                <% }); %>
+            </ul>
+        </div>
+    <% } %>
+
     <form action="/addGame" method="POST">
         <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
+            <input type="text" 
+                   id="title" 
+                   name="title" 
+                   value="<%= typeof oldInput !== 'undefined' ? oldInput.title : '' %>"
+                   required>
         </div>
         
         <div class="form-group">
             <label for="description">Description:</label>
-            <textarea id="description" name="description" rows="4" cols="50"></textarea>
+            <textarea id="description" 
+                      name="description" 
+                      rows="4" 
+                      cols="50"><%= typeof oldInput !== 'undefined' ? oldInput.description : '' %></textarea>
         </div>
         
         <div class="form-group">
             <label for="release_date">Release Date:</label>
-            <input type="date" id="release_date" name="release_date">
+            <input type="date" 
+                   id="release_date" 
+                   name="release_date" 
+                   value="<%= typeof oldInput !== 'undefined' ? oldInput.release_date : '' %>">
         </div>
         
         <div class="form-group">
             <label for="developer_id">Developer:</label>
             <select id="developer_id" name="developer_id">
                 <% studios.forEach(studio => { %>
-                    <option value="<%= studio.studio_id %>"><%= studio.name %></option>
+                    <option value="<%= studio.studio_id %>"
+                            <%= typeof oldInput !== 'undefined' && oldInput.developer_id == studio.studio_id ? 'selected' : '' %>>
+                        <%= studio.name %>
+                    </option>
                 <% }); %>
             </select>
-            <button  data-form="studio" class="showSubForm">Add Studio</button>
+            <button type="button" data-form="studio" class="showSubForm">Add Studio</button>
         </div>
         
         <div class="form-group">
             <label for="publisher_id">Publisher:</label>
             <select id="publisher_id" name="publisher_id">
                 <% studios.forEach(studio => { %>
-                    <option value="<%= studio.studio_id %>"><%= studio.name %></option>
+                    <option value="<%= studio.studio_id %>"
+                            <%= typeof oldInput !== 'undefined' && oldInput.publisher_id == studio.studio_id ? 'selected' : '' %>>
+                        <%= studio.name %>
+                    </option>
                 <% }); %>
             </select>
-            <button data-form="studio" class="showSubForm">Add Studio</button>
+            <button type="button" data-form="studio" class="showSubForm">Add Studio</button>
         </div>
         
         <div class="form-group">
             <label for="series_id">Series:</label>
             <select id="series_id" name="series_id">
-                <option value="">None</option>
+                <option value=""
+                        <%= typeof oldInput !== 'undefined' && !oldInput.series_id ? 'selected' : '' %>>
+                    None
+                </option>
                 <% series.forEach(s => { %>
-                    <option value="<%= s.series_id %>"><%= s.name %></option>
+                    <option value="<%= s.series_id %>"
+                            <%= typeof oldInput !== 'undefined' && oldInput.series_id == s.series_id ? 'selected' : '' %>>
+                        <%= s.name %>
+                    </option>
                 <% }); %>
             </select>
-            <button data-form="series" class="showSubForm">Add Series</button>
+            <button type="button" data-form="series" class="showSubForm">Add Series</button>
         </div>
         
         <div class="form-group">
             <label for="esrb_rating_id">ESRB Rating:</label>
             <select id="esrb_rating_id" name="esrb_rating_id">
                 <% esrbRatings.forEach(rating => { %>
-                    <option value="<%= rating.rating_id %>"><%= rating.name %></option>
+                    <option value="<%= rating.rating_id %>"
+                            <%= typeof oldInput !== 'undefined' && oldInput.esrb_rating_id == rating.rating_id ? 'selected' : '' %>>
+                        <%= rating.name %>
+                    </option>
                 <% }); %>
             </select>
         </div>
@@ -70,12 +106,16 @@
             <div class="checkbox-group">
                 <% genres.forEach(genre => { %>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="genre_<%= genre.genre_id %>" name="genres[]" value="<%= genre.genre_id %>">
+                        <input type="checkbox" 
+                               id="genre_<%= genre.genre_id %>" 
+                               name="genres[]" 
+                               value="<%= genre.genre_id %>"
+                               <%= typeof oldInput !== 'undefined' && oldInput.genres && oldInput.genres.includes(genre.genre_id.toString()) ? 'checked' : '' %>>
                         <label for="genre_<%= genre.genre_id %>"><%= genre.name %></label>
                     </div>
                 <% }); %>
             </div>
-            <button data-form="genre" class="showSubForm">Add Genre</button>
+            <button type="button" data-form="genre" class="showSubForm">Add Genre</button>
         </div>
         
         <div class="form-group">
@@ -83,7 +123,11 @@
             <div class="checkbox-group">
                 <% platforms.forEach(platform => { %>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="platform_<%= platform.platform_id %>" name="platforms[]" value="<%= platform.platform_id %>">
+                        <input type="checkbox" 
+                               id="platform_<%= platform.platform_id %>" 
+                               name="platforms[]" 
+                               value="<%= platform.platform_id %>"
+                               <%= typeof oldInput !== 'undefined' && oldInput.platforms && oldInput.platforms.includes(platform.platform_id.toString()) ? 'checked' : '' %>>
                         <label for="platform_<%= platform.platform_id %>"><%= platform.name %></label>
                     </div>
                 <% }); %>
