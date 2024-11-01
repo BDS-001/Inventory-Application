@@ -1,6 +1,37 @@
 const pool = require("./pool");
 
-// --- Video Game Queries ---
+// --- Constants ---
+const allowedTables = ['platforms', 'studios', 'genres', 'esrb_ratings', 'series'];
+
+// --- Generic Table Operations ---
+async function getAllFromTable(tableName) {
+  if (!allowedTables.includes(tableName)) {
+    throw new Error(`Invalid table name: ${tableName}`);
+  }
+  
+  try {
+    const { rows } = await pool.query(`SELECT * FROM ${tableName}`);
+    return rows;
+  } catch (error) {
+    console.error(`Error fetching data from ${tableName}:`, error);
+    throw error;
+  }
+}
+
+async function insertIntoTable(tableName, name) {
+  if (!allowedTables.includes(tableName)) {
+    throw new Error(`Invalid table name: ${tableName}`);
+  }
+
+  try {
+    await pool.query(`INSERT INTO ${tableName} (name) VALUES ($1) RETURNING *;`, [name]);
+  } catch (error) {
+    console.error(`Error inserting into ${tableName}:`, error);
+    throw error;
+  }
+}
+
+// --- Video Game Operations ---
 async function getAllVideoGames() {
     const query = `SELECT 
       vg.game_id,
@@ -38,136 +69,113 @@ async function getAllVideoGames() {
         vg.game_id, vg.title, vg.description, vg.release_date, 
         p.name, dev.name, pub.name, s.name, er.name
     ORDER BY 
-        vg.game_id;`
+        vg.game_id;`;
     const { rows } = await pool.query(query);
     return rows;
 }
 
-async function getVideoGameById (id) {
+async function getVideoGameById(id) {
   const { rows } = await pool.query("SELECT * FROM video_games WHERE video_games.id = $1", [id]);
   return rows;
 }
 
 async function insertVideoGame(gameData) {
-  return await pool.query("INSERT INTO video_games (title, description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [gameData.title, gameData.description, gameData.release_date, gameData.platform_id, gameData.developer_id, gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]);
+  return await pool.query(
+    "INSERT INTO video_games (title, description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+    [gameData.title, gameData.description, gameData.release_date, gameData.platform_id, gameData.developer_id, 
+     gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]
+  );
 }
 
 async function deleteVideoGame(gameId) {
   try {
-      // Start transaction
-      await pool.query('BEGIN');
-
-      await pool.query('DELETE FROM game_genres WHERE game_id = $1', [gameId]);
-      await pool.query('DELETE FROM game_platforms WHERE game_id = $1', [gameId]);
-      await pool.query('DELETE FROM video_games WHERE game_id = $1', [gameId]);
-
-      // Commit transaction
-      await pool.query('COMMIT');
+    await pool.query('BEGIN');
+    await pool.query('DELETE FROM game_genres WHERE game_id = $1', [gameId]);
+    await pool.query('DELETE FROM game_platforms WHERE game_id = $1', [gameId]);
+    await pool.query('DELETE FROM video_games WHERE game_id = $1', [gameId]);
+    await pool.query('COMMIT');
   } catch(error) {
-      // Rollback in case of error
-      await pool.query('ROLLBACK');
-      throw new Error(`Error deleting video game: ${error.message}`);
+    await pool.query('ROLLBACK');
+    throw new Error(`Error deleting video game: ${error.message}`);
   }
 }
 
+// --- Junction Table Operations ---
+async function insertIntoGameGenres(game_id, genre_id) {
+  return await pool.query(
+    "INSERT INTO game_genres (game_id, genre_id) VALUES ($1, $2)", 
+    [game_id, genre_id]
+  );
+}
 
-// --- Simple Table Queries ---
+async function insertIntoGamePlatforms(game_id, platform_id, release_date) {
+  return await pool.query(
+    "INSERT INTO game_platforms (game_id, platform_id, release_date) VALUES ($1, $2, $3)", 
+    [game_id, platform_id, release_date]
+  );
+}
+
+// --- Delete Operations for Other Tables ---
 async function deleteGenre(genreId) {
   try {
-      // Start transaction
-      await pool.query('BEGIN');
-
-      await pool.query('DELETE FROM game_platforms WHERE genre_id = $1', [genreId]);
-      await pool.query('DELETE FROM genres WHERE genre_id = $1', [genreId]);
-
-      // Commit transaction
-      await pool.query('COMMIT');
+    await pool.query('BEGIN');
+    await pool.query('DELETE FROM game_platforms WHERE genre_id = $1', [genreId]);
+    await pool.query('DELETE FROM genres WHERE genre_id = $1', [genreId]);
+    await pool.query('COMMIT');
   } catch(error) {
-      // Rollback in case of error
-      await pool.query('ROLLBACK');
-      throw new Error(`Error deleting genre: ${error.message}`);
+    await pool.query('ROLLBACK');
+    throw new Error(`Error deleting genre: ${error.message}`);
   }
 }
 
 async function deletePlatform(platformId) {
   try {
-      // Start transaction
-      await pool.query('BEGIN');
-
-      await pool.query('DELETE FROM game_genres WHERE platform_id = $1', [platformId]);
-      await pool.query('DELETE FROM platforms WHERE platform_id = $1', [platformId]);
-
-      // Commit transaction
-      await pool.query('COMMIT');
+    await pool.query('BEGIN');
+    await pool.query('DELETE FROM game_genres WHERE platform_id = $1', [platformId]);
+    await pool.query('DELETE FROM platforms WHERE platform_id = $1', [platformId]);
+    await pool.query('COMMIT');
   } catch(error) {
-      // Rollback in case of error
-      await pool.query('ROLLBACK');
-      throw new Error(`Error deleting genre: ${error.message}`);
+    await pool.query('ROLLBACK');
+    throw new Error(`Error deleting platform: ${error.message}`);
   }
 }
 
-async function insertIntoGameGenres(game_id, genre_id) {
-  return await pool.query("INSERT INTO game_genres (game_id, genre_id) VALUES ($1, $2)", [game_id, genre_id]);
-}
-
-async function insertIntoGamePlatforms(game_id, platform_id, release_date) {
-  return await pool.query("INSERT INTO game_platforms (game_id, platform_id, release_date) VALUES ($1, $2, $3)", [game_id, platform_id, release_date]);
-}
-const allowedTables = ['platforms', 'studios', 'genres', 'esrb_ratings', 'series'];
-
-async function getAllFromTable(tableName) {
-  if (!allowedTables.includes(tableName)) {
-    throw new Error(`Invalid table name: ${tableName}`);
-  }
-  
-  try {
-    const { rows } = await pool.query(`SELECT * FROM ${tableName}`);
-    return rows;
-  } catch (error) {
-    console.error(`Error fetching data from ${tableName}:`, error);
-    throw error;
-  }
-}
-
-async function insertIntoTable(tableName, name) {
-  if (!allowedTables.includes(tableName)) {
-    throw new Error(`Invalid table name: ${tableName}`);
-  }
-
-  try {
-    await pool.query(`INSERT INTO ${tableName} (name) VALUES ($1) RETURNING *;`, [name]);
-  } catch (error) {
-    console.error(`Error inserting into ${tableName}:`, error);
-    throw error;
-  }
-}
-
-// Get all functions
+// --- Convenience Functions for Common Operations ---
 const getAllPlatforms = () => getAllFromTable('platforms');
 const getAllStudios = () => getAllFromTable('studios');
 const getAllGenres = () => getAllFromTable('genres');
 const getAllRatings = () => getAllFromTable('esrb_ratings');
 const getAllSeries = () => getAllFromTable('series');
 
-// Insert functions
 const insertPlatform = (name) => insertIntoTable('platforms', name);
 const insertStudio = (name) => insertIntoTable('studios', name);
 const insertGenre = (name) => insertIntoTable('genres', name);
 const insertRating = (name) => insertIntoTable('esrb_ratings', name);
 const insertSeries = (name) => insertIntoTable('series', name);
 
-
+// --- Exports ---
 module.exports = {
+    // Video Game Operations
     getAllVideoGames,
+    getVideoGameById,
+    insertVideoGame,
+    deleteVideoGame,
+    
+    // Junction Table Operations
+    insertIntoGameGenres,
+    insertIntoGamePlatforms,
+    
+    // Get All Operations
     getAllPlatforms,
     getAllStudios,
     getAllGenres,
     getAllRatings,
     getAllSeries,
+    
+    // Insert Operations
+    insertPlatform,
     insertStudio,
-    insertSeries,
     insertGenre,
-    insertVideoGame,
-    insertIntoGameGenres,
-    insertIntoGamePlatforms
-}
+    insertRating,
+    insertSeries
+};
