@@ -34,12 +34,10 @@ CREATE TABLE video_games (
     title VARCHAR(100) NOT NULL,
     description TEXT,
     release_date DATE,
-    platform_id INT,
     developer_id INT,
     publisher_id INT,
     series_id INT,
     esrb_rating_id INT,
-    FOREIGN KEY (platform_id) REFERENCES platforms(platform_id),
     FOREIGN KEY (developer_id) REFERENCES studios(studio_id),
     FOREIGN KEY (publisher_id) REFERENCES studios(studio_id),
     FOREIGN KEY (series_id) REFERENCES series(series_id),
@@ -90,12 +88,11 @@ VALUES ('Mojang Studios');
 INSERT INTO series (name)
 VALUES ('Minecraft');
 
-INSERT INTO video_games (title, description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id)
+INSERT INTO video_games (title, description, release_date, developer_id, publisher_id, series_id, esrb_rating_id)
 VALUES (
     'Minecraft',
     'A sandbox video game where players can build, mine, craft and adventure in a blocky, procedurally-generated 3D world.',
     '2011-11-18',
-    (SELECT platform_id FROM platforms WHERE name = 'PC'),
     (SELECT studio_id FROM studios WHERE name = 'Mojang Studios'),
     (SELECT studio_id FROM studios WHERE name = 'Mojang Studios'),
     (SELECT series_id FROM series WHERE name = 'Minecraft'),

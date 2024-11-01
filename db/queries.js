@@ -33,45 +33,42 @@ async function insertIntoTable(tableName, name) {
 
 // --- Video Game Operations ---
 async function getAllVideoGames() {
-    const query = `SELECT 
+  const query = `SELECT 
       vg.game_id,
       vg.title,
       vg.description,
       vg.release_date AS main_release_date,
-      p.name AS primary_platform,
       dev.name AS developer,
       pub.name AS publisher,
       s.name AS series,
       er.name AS esrb_rating,
       STRING_AGG(DISTINCT g.name, ', ') AS genres,
       STRING_AGG(DISTINCT p_all.name, ', ') AS all_platforms
-    FROM 
-        video_games vg
-    LEFT JOIN 
-        platforms p ON vg.platform_id = p.platform_id
-    LEFT JOIN 
-        studios dev ON vg.developer_id = dev.studio_id
-    LEFT JOIN 
-        studios pub ON vg.publisher_id = pub.studio_id
-    LEFT JOIN 
-        series s ON vg.series_id = s.series_id
-    LEFT JOIN 
-        esrb_ratings er ON vg.esrb_rating_id = er.rating_id
-    LEFT JOIN 
-        game_genres gg ON vg.game_id = gg.game_id
-    LEFT JOIN 
-        genres g ON gg.genre_id = g.genre_id
-    LEFT JOIN 
-        game_platforms gp ON vg.game_id = gp.game_id
-    LEFT JOIN 
-        platforms p_all ON gp.platform_id = p_all.platform_id
-    GROUP BY 
-        vg.game_id, vg.title, vg.description, vg.release_date, 
-        p.name, dev.name, pub.name, s.name, er.name
-    ORDER BY 
-        vg.game_id;`;
-    const { rows } = await pool.query(query);
-    return rows;
+  FROM 
+      video_games vg
+  LEFT JOIN
+      studios dev ON vg.developer_id = dev.studio_id
+  LEFT JOIN
+      studios pub ON vg.publisher_id = pub.studio_id
+  LEFT JOIN
+      series s ON vg.series_id = s.series_id
+  LEFT JOIN
+      esrb_ratings er ON vg.esrb_rating_id = er.rating_id
+  LEFT JOIN
+      game_genres gg ON vg.game_id = gg.game_id
+  LEFT JOIN
+      genres g ON gg.genre_id = g.genre_id
+  LEFT JOIN
+      game_platforms gp ON vg.game_id = gp.game_id
+  LEFT JOIN
+      platforms p_all ON gp.platform_id = p_all.platform_id
+  GROUP BY
+      vg.game_id, vg.title, vg.description, vg.release_date,
+      dev.name, pub.name, s.name, er.name
+  ORDER BY
+      vg.game_id;`;
+  const { rows } = await pool.query(query);
+  return rows;
 }
 
 async function getVideoGameById(id) {
