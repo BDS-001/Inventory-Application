@@ -72,6 +72,23 @@ async function deleteVideoGame(gameId) {
 
 
 // --- Simple Table Queries ---
+async function deleteGenre(genreId) {
+  try {
+      // Start transaction
+      await pool.query('BEGIN');
+
+      await pool.query('DELETE FROM game_genres WHERE genre_id = $1', [genreId]);
+      await pool.query('DELETE FROM genres WHERE genre_id = $1', [genreId]);
+
+      // Commit transaction
+      await pool.query('COMMIT');
+  } catch(error) {
+      // Rollback in case of error
+      await pool.query('ROLLBACK');
+      throw new Error(`Error deleting genre: ${error.message}`);
+  }
+}
+
 async function insertIntoGameGenres(game_id, genre_id) {
   return await pool.query("INSERT INTO game_genres (game_id, genre_id) VALUES ($1, $2)", [game_id, genre_id]);
 }
