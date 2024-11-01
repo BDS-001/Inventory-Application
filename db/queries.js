@@ -77,8 +77,25 @@ async function deleteGenre(genreId) {
       // Start transaction
       await pool.query('BEGIN');
 
-      await pool.query('DELETE FROM game_genres WHERE genre_id = $1', [genreId]);
+      await pool.query('DELETE FROM game_platforms WHERE genre_id = $1', [genreId]);
       await pool.query('DELETE FROM genres WHERE genre_id = $1', [genreId]);
+
+      // Commit transaction
+      await pool.query('COMMIT');
+  } catch(error) {
+      // Rollback in case of error
+      await pool.query('ROLLBACK');
+      throw new Error(`Error deleting genre: ${error.message}`);
+  }
+}
+
+async function deletePlatform(platformId) {
+  try {
+      // Start transaction
+      await pool.query('BEGIN');
+
+      await pool.query('DELETE FROM game_genres WHERE platform_id = $1', [platformId]);
+      await pool.query('DELETE FROM platforms WHERE platform_id = $1', [platformId]);
 
       // Commit transaction
       await pool.query('COMMIT');
