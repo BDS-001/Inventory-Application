@@ -257,20 +257,18 @@ input[type="submit"]:hover {
 /* Sub Forms */
 .subForm {
   display: none;
-  background-color: var(--card-bg);
-  border: 2px solid var(--primary-color);
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-top: 1rem;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1000;
+  background-color: var(--card-bg);
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
   max-width: 500px;
   width: 90%;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  position: relative;
 }
 
 .subForm.active {
