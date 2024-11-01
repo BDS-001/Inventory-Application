@@ -52,6 +52,24 @@ async function insertVideoGame(gameData) {
   return await pool.query("INSERT INTO video_games (title, description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [gameData.title, gameData.description, gameData.release_date, gameData.platform_id, gameData.developer_id, gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]);
 }
 
+async function deleteVideoGame(gameId) {
+  try {
+      // Start transaction
+      await pool.query('BEGIN');
+
+      await pool.query('DELETE FROM game_genres WHERE game_id = $1', [gameId]);
+      await pool.query('DELETE FROM game_platforms WHERE game_id = $1', [gameId]);
+      await pool.query('DELETE FROM video_games WHERE game_id = $1', [gameId]);
+
+      // Commit transaction
+      await pool.query('COMMIT');
+  } catch(error) {
+      // Rollback in case of error
+      await pool.query('ROLLBACK');
+      throw new Error(`Error deleting video game: ${error.message}`);
+  }
+}
+
 
 // --- Simple Table Queries ---
 async function insertIntoGameGenres(game_id, genre_id) {
