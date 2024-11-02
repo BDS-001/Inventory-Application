@@ -78,8 +78,8 @@ async function getVideoGameById(id) {
 
 async function insertVideoGame(gameData) {
   return await pool.query(
-    "INSERT INTO video_games (title, description, release_date, platform_id, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-    [gameData.title, gameData.description, gameData.release_date, gameData.platform_id, gameData.developer_id, 
+    "INSERT INTO video_games (title, description, release_date, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+    [gameData.title, gameData.description, gameData.release_date, gameData.developer_id, 
      gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]
   );
 }
