@@ -20,6 +20,9 @@
                 <div class="game-info"><strong>ESRB Rating:</strong> <%= game.esrb_rating %></div>
                 <div class="game-info"><strong>Genres:</strong> <%= game.genres %></div>
                 <div class="game-info"><strong>All Platforms:</strong> <%= game.all_platforms %></div>
+                <form action="/deleteGame/<%= game.game_id %>" method="POST" class="delete-form">
+                    <button type="submit" class="delete-btn">Delete Game</button>
+                </form>
             </div>
         <% }); %>
     </div>

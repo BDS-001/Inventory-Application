@@ -152,9 +152,25 @@ async function postAddGame(req, res, next) {
     }
 }
 
+async function deleteGame(req, res, next) {
+    try {
+        const gameId = parseInt(req.params.id);
+        if (isNaN(gameId)) {
+            throw new AppError('Invalid game ID', 400);
+        }
+
+        await db.deleteVideoGame(gameId);
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error deleting game:', error);
+        next(new AppError('An error occurred while deleting the game', 500));
+    }
+}
+
 module.exports = {
     getGames,
     getAddGame,
     postAddGame,
-    validateGame
+    validateGame,
+    deleteGame
 };
