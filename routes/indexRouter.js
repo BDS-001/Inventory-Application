@@ -5,10 +5,11 @@ const seriesController = require('../controllers/seriesController');
 const genreController = require('../controllers/genreController');
 
 router.get("/", videoGameController.getGames);
-router.get('/addGame', videoGameController.getAddGame)
-router.post('/addGame', videoGameController.validateGame, videoGameController.postAddGame)
+router.get('/addGame', videoGameController.getAddGame);
+router.post('/addGame', videoGameController.validateGame, videoGameController.postAddGame);
 
 router.post('/deleteGame/:id', videoGameController.deleteGame);
+router.post('/editGame/:id', videoGameController.editGame);
 
 router.get('/addStudio', studioController.getAddStudio)
 router.post('/addStudio', studioController.validateStudio, studioController.postAddStudio);

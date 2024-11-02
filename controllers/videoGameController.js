@@ -167,10 +167,20 @@ async function deleteGame(req, res, next) {
     }
 }
 
+async function editGame(req, res, next) {
+    try {
+
+    } catch (error) {
+        console.error('Error editing game:', error);
+        next(new AppError('An error occurred while editing the game', 500));
+    }
+}
+
 module.exports = {
     getGames,
     getAddGame,
     postAddGame,
     validateGame,
-    deleteGame
+    deleteGame,
+    editGame
 };
