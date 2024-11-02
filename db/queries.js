@@ -77,10 +77,22 @@ async function getVideoGameById(id) {
 }
 
 async function insertVideoGame(gameData) {
-  return await pool.query(
-    "INSERT INTO video_games (title, description, release_date, developer_id, publisher_id, series_id, esrb_rating_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-    [gameData.title, gameData.description, gameData.release_date, gameData.developer_id, 
-     gameData.publisher_id, gameData.series_id, gameData.esrb_rating_id]
+  return await pool.query(`
+    INSERT INTO video_games(
+      title, description, release_date, developer_id, 
+      publisher_id, series_id, esrb_rating_id
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7) 
+    RETURNING *`,
+    [
+      gameData.title, 
+      gameData.description, 
+      gameData.release_date, 
+      gameData.developer_id,
+      gameData.publisher_id, 
+      gameData.series_id, 
+      gameData.esrb_rating_id
+    ]
   );
 }
 
@@ -95,6 +107,33 @@ async function deleteVideoGame(gameId) {
     await pool.query('ROLLBACK');
     throw new Error(`Error deleting video game: ${error.message}`);
   }
+}
+
+async function updateVideoGame(gameId, gameData) {
+  await pool.query('BEGIN');
+  const result = pool.query(`
+      UPDATE video_games 
+      SET 
+        title = $1,
+        description = $2,
+        release_date = $3,
+        developer_id = $4,
+        publisher_id = $5,
+        series_id = $6,
+        esrb_rating_id = $7
+      WHERE game_id = $8
+      RETURNING *
+    `, [
+      gameData.title,
+      gameData.description,
+      gameData.release_date,
+      gameData.developer_id,
+      gameData.publisher_id,
+      gameData.series_id,
+      gameData.esrb_rating_id,
+      gameId
+    ])
+  await pool.query('COMMIT');
 }
 
 // --- Junction Table Operations ---
