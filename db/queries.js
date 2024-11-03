@@ -72,8 +72,49 @@ async function getAllVideoGames() {
 }
 
 async function getVideoGameById(id) {
-  const { rows } = await pool.query("SELECT * FROM video_games WHERE video_games.id = $1", [id]);
-  return rows;
+  const { rows } = await pool.query(`
+    SELECT
+        vg.game_id,
+        vg.title,
+        vg.description,
+        vg.release_date,
+        vg.developer_id,
+        vg.publisher_id,
+        vg.series_id,
+        vg.esrb_rating_id,
+        dev.name AS developer,
+        pub.name AS publisher,
+        s.name AS series,
+        er.name AS esrb_rating,
+        ARRAY_AGG(DISTINCT gg.genre_id::text) as genre_ids,
+        STRING_AGG(DISTINCT g.name, ', ') AS genres,
+        ARRAY_AGG(DISTINCT gp.platform_id::text) as platform_ids,
+        STRING_AGG(DISTINCT p_all.name, ', ') AS all_platforms
+    FROM
+        video_games vg
+        LEFT JOIN studios dev ON vg.developer_id = dev.studio_id
+        LEFT JOIN studios pub ON vg.publisher_id = pub.studio_id
+        LEFT JOIN series s ON vg.series_id = s.series_id
+        LEFT JOIN esrb_ratings er ON vg.esrb_rating_id = er.rating_id
+        LEFT JOIN game_genres gg ON vg.game_id = gg.game_id
+        LEFT JOIN genres g ON gg.genre_id = g.genre_id
+        LEFT JOIN game_platforms gp ON vg.game_id = gp.game_id
+        LEFT JOIN platforms p_all ON gp.platform_id = p_all.platform_id
+    WHERE
+        vg.game_id = $1
+    GROUP BY
+        vg.game_id, vg.title, vg.description, vg.release_date,
+        vg.developer_id, vg.publisher_id, vg.series_id, vg.esrb_rating_id,
+        dev.name, pub.name, s.name, er.name;
+    `, [id])
+  if (rows.length === 0) {
+    throw new Error('Game not found')
+  }
+  const game = rows[0]
+  game.genres = game.genre_ids ? game.genre_ids.filter(id => id !== null) : []
+  game.platforms = game.platform_ids ? game.platform_ids.filter(id => id !== null) : []
+  
+  return game;
 }
 
 async function insertVideoGame(gameData) {
