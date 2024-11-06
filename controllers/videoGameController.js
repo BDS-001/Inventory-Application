@@ -167,9 +167,32 @@ async function deleteGame(req, res, next) {
     }
 }
 
-async function editGame(req, res, next) {
+async function getEditGame(req, res, next) {
     try {
+        const gameId = parseInt(req.params.id);
+        if (isNaN(gameId)) {
+            throw new AppError('Invalid game ID', 400);
+        }
+        const [game, platforms, genres, studios, esrbRatings, series] = await Promise.all([
+            db.getVideoGameById(gameId),
+            db.getAllPlatforms(),
+            db.getAllGenres(),
+            db.getAllStudios(),
+            db.getAllRatings(),
+            db.getAllSeries()
+        ])
 
+        res.render('editGame', {
+            pageTitle: 'Edit Game',
+            game,
+            platforms,
+            genres,
+            studios,
+            esrbRatings,
+            series,
+            errors: []
+        });
+        
     } catch (error) {
         console.error('Error editing game:', error);
         next(new AppError('An error occurred while editing the game', 500));
@@ -182,5 +205,5 @@ module.exports = {
     postAddGame,
     validateGame,
     deleteGame,
-    editGame
+    getEditGame
 };
