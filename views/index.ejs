@@ -20,12 +20,14 @@
                 <div class="game-info"><strong>ESRB Rating:</strong> <%= game.esrb_rating %></div>
                 <div class="game-info"><strong>Genres:</strong> <%= game.genres %></div>
                 <div class="game-info"><strong>All Platforms:</strong> <%= game.all_platforms %></div>
-                <form action="/deleteGame/<%= game.game_id %>" method="POST" class="delete-form">
-                    <button type="submit" class="delete-btn">Delete Game</button>
-                </form>
-                <form action="/editGame/<%= game.game_id %>" method="GET" class="edit-form">
-                    <button type="submit" class="edit-btn">Edit Game</button>
-                </form>
+                <div class="action-buttons">
+                    <form action="/deleteGame/<%= game.game_id %>" method="POST" class="delete-form">
+                        <button type="submit" class="delete-btn">Delete Game</button>
+                    </form>
+                    <form action="/editGame/<%= game.game_id %>" method="GET" class="edit-form">
+                        <button type="submit" class="edit-btn">Edit Game</button>
+                    </form>
+                </div>
             </div>
         <% }); %>
     </div>

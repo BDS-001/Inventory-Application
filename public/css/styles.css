@@ -238,6 +238,13 @@ input[type="submit"]:hover {
   cursor: pointer;
 }
 
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
 /* Error Messages */
 .error-messages {
   background-color: rgba(255, 68, 68, 0.1);
