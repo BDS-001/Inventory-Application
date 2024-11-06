@@ -1,6 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('.subForm');
     const showFormButtons = document.querySelectorAll('.showSubForm');
+
+    const newItems = {
+        studios: [],
+        genres: [],
+        series: []
+    }
+
+    const handleSubFormSubmit = () => {
+        return
+    }
+
+    const handleMainFormSubmit = () => {
+        return
+    }
     
     const showForm = (e) => {
         e.preventDefault();
@@ -18,13 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    //event listeners
     showFormButtons.forEach((button) => {
         button.addEventListener('click', (e) => showForm(e));
     });
 
-    const closeButtons = document.querySelectorAll('.close-button');
-    closeButtons.forEach((button) => {
+    document.querySelectorAll('.close-button').forEach((button) => {
         button.addEventListener('click', (e) => closeForm(e));
     });
+
+    document.querySelectorAll('.subForm form').forEach(form => {
+        form.addEventListener('submit', handleSubFormSubmit);
+    });
+
+    document.querySelector('form[action^="/addGame"], form[action^="/editGame"]')
+        .addEventListener('submit', handleMainFormSubmit);
 });
