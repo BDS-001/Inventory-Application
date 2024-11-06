@@ -151,30 +151,74 @@ async function deleteVideoGame(gameId) {
 }
 
 async function updateVideoGame(gameId, gameData) {
-  await pool.query('BEGIN');
-  const result = pool.query(`
-      UPDATE video_games 
-      SET 
-        title = $1,
-        description = $2,
-        release_date = $3,
-        developer_id = $4,
-        publisher_id = $5,
-        series_id = $6,
-        esrb_rating_id = $7
-      WHERE game_id = $8
-      RETURNING *
-    `, [
-      gameData.title,
-      gameData.description,
-      gameData.release_date,
-      gameData.developer_id,
-      gameData.publisher_id,
-      gameData.series_id,
-      gameData.esrb_rating_id,
-      gameId
-    ])
-  await pool.query('COMMIT');
+  try {
+    await pool.query('BEGIN');
+    const result = pool.query(`
+        UPDATE video_games 
+        SET 
+          title = $1,
+          description = $2,
+          release_date = $3,
+          developer_id = $4,
+          publisher_id = $5,
+          series_id = $6,
+          esrb_rating_id = $7
+        WHERE game_id = $8
+        RETURNING *
+      `, [
+        gameData.title,
+        gameData.description,
+        gameData.release_date,
+        gameData.developer_id,
+        gameData.publisher_id,
+        gameData.series_id,
+        gameData.esrb_rating_id,
+        gameId
+      ])
+    await pool.query('COMMIT');
+  } catch(error) {
+    await pool.query('ROLLBACK');
+    throw new Error(`Error updating video game: ${error.message}`);
+  }
+
+}
+
+async function updateGameGenres(gameId, genreIds) {
+  try {
+      await pool.query('BEGIN');
+      await pool.query('DELETE FROM game_genres WHERE game_id = $1', [gameId]);
+      if (genreIds && genreIds.length > 0) {
+          const values = genreIds.map((genreId) => `(${gameId}, ${genreId})`).join(',');
+          await pool.query(`
+              INSERT INTO game_genres (game_id, genre_id)
+              VALUES ${values}
+          `);
+      }
+      await pool.query('COMMIT');
+  } catch(error) {
+      await pool.query('ROLLBACK');
+      throw new Error(`Error updating game genres: ${error.message}`);
+  }
+}
+
+async function updateGamePlatforms(gameId, platformIds) {
+  try {
+      await pool.query('BEGIN');
+      await pool.query('DELETE FROM game_platforms WHERE game_id = $1', [gameId]);
+      if (platformIds && platformIds.length > 0) {
+          const values = platformIds.map((platformId) => 
+              `(${gameId}, ${platformId}, $1)`
+          ).join(',');
+          await pool.query(`
+              INSERT INTO game_platforms (game_id, platform_id)
+              VALUES ${values}
+          `, [releaseDate]);
+      }
+      await pool.query('COMMIT');
+  } catch(error) {
+      await pool.query('ROLLBACK');
+      throw new Error(`Error updating game platforms: ${error.message}`);
+  }
 }
 
 // --- Junction Table Operations ---
@@ -237,10 +281,14 @@ module.exports = {
     getVideoGameById,
     insertVideoGame,
     deleteVideoGame,
+    updateVideoGame,
     
     // Junction Table Operations
     insertIntoGameGenres,
     insertIntoGamePlatforms,
+    updateGameGenres,
+    updateGamePlatforms,
+
     
     // Get All Operations
     getAllPlatforms,
@@ -254,5 +302,5 @@ module.exports = {
     insertStudio,
     insertGenre,
     insertRating,
-    insertSeries
+    insertSeries,
 };

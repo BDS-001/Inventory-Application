@@ -192,6 +192,58 @@ async function getEditGame(req, res, next) {
             series,
             errors: []
         });
+
+    } catch (error) {
+        console.error('Error editing game:', error);
+        next(new AppError('An error occurred while editing the game', 500));
+    }
+}
+
+async function postEditGame(req, res, next) {
+    try {
+        const gameId = parseInt(req.params.id);
+        if (isNaN(gameId)) {
+            throw new AppError('Invalid game ID', 400);
+        }
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const [game, platforms, genres, studios, esrbRatings, series] = await Promise.all([
+                db.getVideoGameById(gameId),
+                db.getAllPlatforms(),
+                db.getAllGenres(),
+                db.getAllStudios(),
+                db.getAllRatings(),
+                db.getAllSeries()
+            ])
+    
+            res.render('editGame', {
+                pageTitle: 'Edit Game',
+                game,
+                platforms,
+                genres,
+                studios,
+                esrbRatings,
+                series,
+                errors: errors.array()
+            });
+
+        const gameData = {
+            title: req.body.title,
+            description: req.body.description,
+            release_date: req.body.release_date,
+            developer_id: req.body.developer_id,
+            publisher_id: req.body.publisher_id,
+            series_id: req.body.series_id || null,
+            esrb_rating_id: req.body.esrb_rating_id,
+            platforms: req.body.platforms,
+            genres: req.body.genres 
+        };
+        await db.updateVideoGame(gameId, gameData)
+        await db.updateGameGenres(gameId, gameData.genres);
+        await db.updateGamePlatforms(gameId, gameData.platforms, gameData.release_date);
+        res.redirect('/');
+        }
         
     } catch (error) {
         console.error('Error editing game:', error);
@@ -205,5 +257,6 @@ module.exports = {
     postAddGame,
     validateGame,
     deleteGame,
-    getEditGame
+    getEditGame,
+    postEditGame
 };

@@ -11,6 +11,7 @@ router.post('/addGame', videoGameController.validateGame, videoGameController.po
 router.post('/deleteGame/:id', videoGameController.deleteGame);
 
 router.get('/editGame/:id', videoGameController.getEditGame);
+router.post('/editGame/:id', videoGameController.postEditGame);
 
 router.get('/addStudio', studioController.getAddStudio)
 router.post('/addStudio', studioController.validateStudio, studioController.postAddStudio);
