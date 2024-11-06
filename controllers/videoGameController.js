@@ -182,7 +182,7 @@ async function getEditGame(req, res, next) {
             db.getAllSeries()
         ])
 
-        res.render('editGame', {
+        return res.render('editGame', {
             pageTitle: 'Edit Game',
             game,
             platforms,
@@ -215,9 +215,9 @@ async function postEditGame(req, res, next) {
                 db.getAllStudios(),
                 db.getAllRatings(),
                 db.getAllSeries()
-            ])
+            ]);
     
-            res.render('editGame', {
+            return res.render('editGame', {
                 pageTitle: 'Edit Game',
                 game,
                 platforms,
@@ -227,6 +227,7 @@ async function postEditGame(req, res, next) {
                 series,
                 errors: errors.array()
             });
+        }
 
         const gameData = {
             title: req.body.title,
@@ -236,15 +237,15 @@ async function postEditGame(req, res, next) {
             publisher_id: req.body.publisher_id,
             series_id: req.body.series_id || null,
             esrb_rating_id: req.body.esrb_rating_id,
-            platforms: req.body.platforms,
-            genres: req.body.genres 
+            platforms: req.body.platforms || [],
+            genres: req.body.genres || []
         };
-        await db.updateVideoGame(gameId, gameData)
+
+        await db.updateVideoGame(gameId, gameData);
         await db.updateGameGenres(gameId, gameData.genres);
         await db.updateGamePlatforms(gameId, gameData.platforms, gameData.release_date);
-        res.redirect('/');
-        }
         
+        res.redirect('/');
     } catch (error) {
         console.error('Error editing game:', error);
         next(new AppError('An error occurred while editing the game', 500));

@@ -201,7 +201,7 @@ async function updateGameGenres(gameId, genreIds) {
   }
 }
 
-async function updateGamePlatforms(gameId, platformIds) {
+async function updateGamePlatforms(gameId, platformIds, releaseDate) {
   try {
       await pool.query('BEGIN');
       await pool.query('DELETE FROM game_platforms WHERE game_id = $1', [gameId]);
@@ -210,7 +210,7 @@ async function updateGamePlatforms(gameId, platformIds) {
               `(${gameId}, ${platformId}, $1)`
           ).join(',');
           await pool.query(`
-              INSERT INTO game_platforms (game_id, platform_id)
+              INSERT INTO game_platforms (game_id, platform_id, release_date)
               VALUES ${values}
           `, [releaseDate]);
       }
