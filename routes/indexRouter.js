@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const videoGameController = require('../controllers/videoGameController');
-const studioController = require('../controllers/studioController');
-const seriesController = require('../controllers/seriesController');
-const genreController = require('../controllers/genreController');
+const apiController = require("../controllers/apiController");
 
 router.get("/", videoGameController.getGames);
 router.get('/addGame', videoGameController.getAddGame);
@@ -13,13 +11,8 @@ router.post('/deleteGame/:id', videoGameController.deleteGame);
 router.get('/editGame/:id', videoGameController.getEditGame);
 router.post('/editGame/:id', videoGameController.postEditGame);
 
-router.get('/addStudio', studioController.getAddStudio)
-router.post('/addStudio', studioController.validateStudio, studioController.postAddStudio);
-
-router.get('/addSeries', seriesController.getAddSeries)
-router.post('/addSeries', seriesController.validateSeries, seriesController.postAddSeries);
-
-router.get('/addGenre', genreController.getAddGenre)
-router.post('/addGenre', genreController.validateGenre, genreController.postAddGenre);
+router.post('/api/studios', apiController.validateEntity, apiController.createStudio);
+router.post('/api/genres', apiController.validateEntity, apiController.createGenre);
+router.post('/api/series', apiController.validateEntity, apiController.createSeries);
 
 module.exports = router;

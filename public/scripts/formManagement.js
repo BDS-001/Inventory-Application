@@ -50,8 +50,53 @@ document.addEventListener('DOMContentLoaded', () => {
         return
     }
 
-    const handleMainFormSubmit = () => {
-        return
+    const createNewEntity = async (entityType, index, name) => {
+        const response = await fetch(`/api/${entityType}s`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.errors?.[0]?.msg || `Failed to create ${entityType}`);
+        }
+
+        if (entityType === 'studio') {
+            document.querySelectorAll(`option[value="new_${index}"]`)
+                .forEach(option => { option.value = data.id; });
+        } else if (entityType === 'genre') {
+            const checkbox = document.querySelector(`input[value="new_${index}"]`);
+            if (checkbox) checkbox.value = data.id;
+        } else if (entityType === 'series') {
+            const option = document.querySelector(`option[value="new_${index}"]`);
+            if (option) option.value = data.id;
+        }
+
+        return data.id;
+    };
+
+    const handleMainFormSubmit = async (e) => {
+        e.preventDefault()
+        const form = e.target
+
+        try {
+            for (let i = 0; i < newItems.studios.length; i++) {
+                await createNewEntity('studio', i, newItems.studios[i]);
+            }
+
+            for (let i = 0; i < newItems.genres.length; i++) {
+                await createNewEntity('genre', i, newItems.genres[i]);
+            }
+
+            for (let i = 0; i < newItems.series.length; i++) {
+                await createNewEntity('series', i, newItems.series[i]);
+            }
+
+            form.submit();
+        } catch (error) {
+            console.error('Error processing form:', error);
+            alert('An error occurred while processing the form. Please try again.');
+        }
     }
     
     const showForm = (e) => {
