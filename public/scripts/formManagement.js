@@ -16,6 +16,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = nameInput.value;
 
         if (!name) return;
+
+        newItems[formType].push(name)
+
+        if (formType === 'studio') {
+            const developerSelect = document.querySelector('#developer_id');
+            const publisherSelect = document.querySelector('#publisher_id');
+            
+            const option = `<option value="new_${newItems.studios.length - 1}">${name}</option>`;
+            developerSelect.insertAdjacentHTML('beforeend', option);
+            publisherSelect.insertAdjacentHTML('beforeend', option);
+        } else if (formType === 'series') {
+            const seriesSelect = document.querySelector('#series_id');
+            const option = `<option value="new_${newItems.series.length - 1}">${name}</option>`;
+            seriesSelect.insertAdjacentHTML('beforeend', option);
+        } else if (formType === 'genre') {
+            const genreGroup = document.querySelector('.checkbox-group');
+            const checkboxItem = `
+                <div class="checkbox-item">
+                    <input type="checkbox" 
+                           id="genre_new_${newItems.genres.length - 1}" 
+                           name="genres[]" 
+                           value="new_${newItems.genres.length - 1}"
+                           checked>
+                    <label for="genre_new_${newItems.genres.length - 1}">${name}</label>
+                </div>`;
+            genreGroup.insertAdjacentHTML('beforeend', checkboxItem);
+        }
+
+        nameInput.value = '';
+        form.closest('.subForm').style.display = 'none';
+
         return
     }
 
