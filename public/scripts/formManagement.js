@@ -5,43 +5,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const newItems = {
         studio: [],
         genre: [],
-        serie: []
-    }
+        series: []
+    };
 
     const handleSubFormSubmit = (e) => {
         e.preventDefault()
         const form = e.target
-        const formType = form.closest('.subForm').dataset.form;
+        const subForm = form.closest('.subForm')
+        const formType = subForm.dataset.form;
         const nameInput = form.querySelector('#name');
-        const name = nameInput.value;
+        const name = nameInput.value.trim();
 
         if (!name) return;
 
         newItems[formType].push(name)
+        const newIndex = newItems[formType].length - 1
 
-        if (formType === 'studio') {
-            const developerSelect = document.querySelector('#developer_id');
-            const publisherSelect = document.querySelector('#publisher_id');
-            
-            const option = `<option value="new_${newItems.studios.length - 1}">${name}</option>`;
-            developerSelect.insertAdjacentHTML('beforeend', option);
-            publisherSelect.insertAdjacentHTML('beforeend', option);
-        } else if (formType === 'series') {
-            const seriesSelect = document.querySelector('#series_id');
-            const option = `<option value="new_${newItems.series.length - 1}">${name}</option>`;
-            seriesSelect.insertAdjacentHTML('beforeend', option);
-        } else if (formType === 'genre') {
-            const genreGroup = document.querySelector('.checkbox-group');
-            const checkboxItem = `
-                <div class="checkbox-item">
-                    <input type="checkbox" 
-                           id="genre_new_${newItems.genres.length - 1}" 
-                           name="genres[]" 
-                           value="new_${newItems.genres.length - 1}"
-                           checked>
-                    <label for="genre_new_${newItems.genres.length - 1}">${name}</label>
-                </div>`;
-            genreGroup.insertAdjacentHTML('beforeend', checkboxItem);
+        switch(formType) {
+            case 'studio':
+                const developerSelect = document.querySelector('#developer_id');
+                const publisherSelect = document.querySelector('#publisher_id');
+                const studioOption = `<option value="new_${newIndex}">${name}</option>`;
+                developerSelect.insertAdjacentHTML('beforeend', studioOption);
+                publisherSelect.insertAdjacentHTML('beforeend', studioOption);
+                break;
+                
+            case 'series':
+                const seriesSelect = document.querySelector('#series_id');
+                const seriesOption = `<option value="new_${newIndex}">${name}</option>`;
+                seriesSelect.insertAdjacentHTML('beforeend', seriesOption);
+                break;
+                
+            case 'genre':
+                const genreGroup = document.querySelector('.checkbox-group');
+                const checkboxItem = `
+                    <div class="checkbox-item">
+                        <input type="checkbox" 
+                               id="genre_new_${newIndex}" 
+                               name="genres[]" 
+                               value="new_${newIndex}"
+                               checked>
+                        <label for="genre_new_${newIndex}">${name}</label>
+                    </div>`;
+                genreGroup.insertAdjacentHTML('beforeend', checkboxItem);
+                break;
         }
 
         nameInput.value = '';
@@ -51,28 +58,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const createNewEntity = async (entityType, index, name) => {
-        const response = await fetch(`/api/${entityType}s`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name })
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.errors?.[0]?.msg || `Failed to create ${entityType}`);
-        }
+        try {
+            const response = await fetch(`/api/${entityType}s`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
 
-        if (entityType === 'studio') {
-            document.querySelectorAll(`option[value="new_${index}"]`)
-                .forEach(option => { option.value = data.id; });
-        } else if (entityType === 'genre') {
-            const checkbox = document.querySelector(`input[value="new_${index}"]`);
-            if (checkbox) checkbox.value = data.id;
-        } else if (entityType === 'series') {
-            const option = document.querySelector(`option[value="new_${index}"]`);
-            if (option) option.value = data.id;
-        }
+            const data = await response.json();
 
-        return data.id;
+            if (!response.ok) {
+                throw new Error(data.errors?.[0]?.msg || `Failed to create ${entityType}`);
+            }
+
+            if (entityType === 'studio') {
+                document.querySelectorAll(`option[value="new_${index}"]`)
+                    .forEach(option => { option.value = data.id; });
+            } else if (entityType === 'genre') {
+                const checkbox = document.querySelector(`input[value="new_${index}"]`);
+                if (checkbox) checkbox.value = data.id;
+            } else if (entityType === 'series') {
+                const option = document.querySelector(`option[value="new_${index}"]`);
+                if (option) option.value = data.id;
+            }
+
+            return data.id;
+        } catch (error) {
+            console.error(`Error creating ${entityType}:`, error);
+            throw error;
+        }
     };
 
     const handleMainFormSubmit = async (e) => {
@@ -80,12 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = e.target
 
         try {
-            for (let i = 0; i < newItems.studios.length; i++) {
-                await createNewEntity('studio', i, newItems.studios[i]);
+            for (let i = 0; i < newItems.studio.length; i++) {
+                await createNewEntity('studio', i, newItems.studio[i]);
             }
 
-            for (let i = 0; i < newItems.genres.length; i++) {
-                await createNewEntity('genre', i, newItems.genres[i]);
+            for (let i = 0; i < newItems.genre.length; i++) {
+                await createNewEntity('genre', i, newItems.genre[i]);
             }
 
             for (let i = 0; i < newItems.series.length; i++) {
