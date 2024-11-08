@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const showFormButtons = document.querySelectorAll('.showSubForm');
 
     const newItems = {
-        studios: [],
-        genres: [],
-        series: []
+        studio: [],
+        genre: [],
+        serie: []
     }
 
     const handleSubFormSubmit = (e) => {
