@@ -8,7 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
         series: []
     }
 
-    const handleSubFormSubmit = () => {
+    const handleSubFormSubmit = (e) => {
+        e.preventDefault()
+        const form = e.target
+        const formType = form.closest('.subForm').dataset.form;
+        const nameInput = form.querySelector('#name');
+        const name = nameInput.value;
+
+        if (!name) return;
         return
     }
 
