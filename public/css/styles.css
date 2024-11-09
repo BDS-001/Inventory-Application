@@ -385,3 +385,50 @@ input[type="submit"]:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* Filter Styles */
+.filter-section {
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+  padding: 1rem;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--card-bg);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--primary-color);
+}
+
+.filter-container label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.filter-container select {
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--input-bg);
+  border: 1px solid var(--primary-color);
+  color: var(--text-color);
+  min-width: 200px;
+}
+
+.filter-container select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .filter-container {
+      flex-direction: column;
+      align-items: stretch;
+  }
+  
+  .filter-container select {
+      width: 100%;
+  }
+}
