@@ -14,5 +14,6 @@ router.post('/editGame/:id', videoGameController.postEditGame);
 router.post('/api/studios', apiController.validateEntity, apiController.createStudio);
 router.post('/api/genres', apiController.validateEntity, apiController.createGenre);
 router.post('/api/series', apiController.validateEntity, apiController.createSeries);
+router.get('/api/filters/:filterType', videoGameController.getFilterOptions);
 
 module.exports = router;

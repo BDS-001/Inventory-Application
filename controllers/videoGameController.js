@@ -4,12 +4,22 @@ const AppError = require('../utils/customErrors');
 
 async function getGames(req, res, next) {
     try {
-        console.log('Attempting to get games');
-        const games = await db.getAllVideoGames();
-        console.log('Games fetched:', games);
+        const filterType = req.query.type;
+        const filterValue = req.query.value;
+        
+        let games;
+        if (filterType && filterValue) {
+            // implement
+            games = await db.getAllVideoGames() // temp
+        } else {
+            games = await db.getAllVideoGames();
+        }
+
         res.render('index', {
-            pageTitle: 'Video Game Inventory', 
-            games: games
+            pageTitle: 'Video Game Inventory',
+            games: games,
+            filterType: filterType || '',
+            filterValue: filterValue || ''
         });
     } catch (error) {
         console.error('Error in getGames:', error);
@@ -252,6 +262,49 @@ async function postEditGame(req, res, next) {
     }
 }
 
+async function getFilterOptions(req, res, next) {
+    try {
+        const { filterType } = req.params;
+        let options = [];
+        
+        switch (filterType) {
+            case 'genre':
+                const genres = await db.getAllGenres();
+                options = genres.map(genre => ({ id: genre.genre_id, name: genre.name }));
+                break;
+            
+            case 'platform':
+                const platforms = await db.getAllPlatforms();
+                options = platforms.map(platform => ({ id: platform.platform_id, name: platform.name }));
+                break;
+            
+            case 'developer':
+            case 'publisher':
+                const studios = await db.getAllStudios();
+                options = studios.map(studio => ({ id: studio.studio_id, name: studio.name }));
+                break;
+            
+            case 'series':
+                const series = await db.getAllSeries();
+                options = series.map(s => ({ id: s.series_id, name: s.name }));
+                break;
+            
+            case 'esrb':
+                const ratings = await db.getAllRatings();
+                options = ratings.map(rating => ({ id: rating.rating_id, name: rating.name }));
+                break;
+            
+            default:
+                return res.status(400).json({ error: 'Invalid filter type' });
+        }
+        
+        res.json(options);
+    } catch (error) {
+        console.error('Error fetching filter options:', error);
+        next(new AppError('Failed to fetch filter options', 500));
+    }
+}
+
 module.exports = {
     getGames,
     getAddGame,
@@ -259,5 +312,6 @@ module.exports = {
     validateGame,
     deleteGame,
     getEditGame,
-    postEditGame
+    postEditGame,
+    getFilterOptions
 };
