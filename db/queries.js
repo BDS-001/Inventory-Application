@@ -262,6 +262,87 @@ async function deletePlatform(platformId) {
   }
 }
 
+//filter query
+async function getFilteredVideoGames(filterType, filterValue) {
+  let query = `
+      SELECT 
+          vg.game_id,
+          vg.title,
+          vg.description,
+          vg.release_date AS main_release_date,
+          dev.name AS developer,
+          pub.name AS publisher,
+          s.name AS series,
+          er.name AS esrb_rating,
+          STRING_AGG(DISTINCT g.name, ', ') AS genres,
+          STRING_AGG(DISTINCT p_all.name, ', ') AS all_platforms
+      FROM 
+          video_games vg
+      LEFT JOIN
+          studios dev ON vg.developer_id = dev.studio_id
+      LEFT JOIN
+          studios pub ON vg.publisher_id = pub.studio_id
+      LEFT JOIN
+          series s ON vg.series_id = s.series_id
+      LEFT JOIN
+          esrb_ratings er ON vg.esrb_rating_id = er.rating_id
+      LEFT JOIN
+          game_genres gg ON vg.game_id = gg.game_id
+      LEFT JOIN
+          genres g ON gg.genre_id = g.genre_id
+      LEFT JOIN
+          game_platforms gp ON vg.game_id = gp.game_id
+      LEFT JOIN
+          platforms p_all ON gp.platform_id = p_all.platform_id
+  `;
+
+  let whereClause = '';
+  const params = [];
+
+  switch(filterType) {
+      case 'genre':
+          whereClause = 'WHERE gg.genre_id = $1';
+          params.push(filterValue);
+          break;
+          
+      case 'platform':
+          whereClause = 'WHERE gp.platform_id = $1';
+          params.push(filterValue);
+          break;
+          
+      case 'developer':
+          whereClause = 'WHERE vg.developer_id = $1';
+          params.push(filterValue);
+          break;
+          
+      case 'publisher':
+          whereClause = 'WHERE vg.publisher_id = $1';
+          params.push(filterValue);
+          break;
+          
+      case 'series':
+          whereClause = 'WHERE vg.series_id = $1';
+          params.push(filterValue);
+          break;
+          
+      case 'esrb':
+          whereClause = 'WHERE vg.esrb_rating_id = $1';
+          params.push(filterValue);
+          break;
+  }
+
+  query += whereClause + `
+      GROUP BY
+          vg.game_id, vg.title, vg.description, vg.release_date,
+          dev.name, pub.name, s.name, er.name
+      ORDER BY
+          vg.title;
+  `;
+
+  const { rows } = await pool.query(query, params);
+  return rows;
+}
+
 // --- Convenience Functions for Common Operations ---
 const getAllPlatforms = () => getAllFromTable('platforms');
 const getAllStudios = () => getAllFromTable('studios');
@@ -283,6 +364,7 @@ module.exports = {
     insertVideoGame,
     deleteVideoGame,
     updateVideoGame,
+    getFilteredVideoGames,
     
     // Junction Table Operations
     insertIntoGameGenres,

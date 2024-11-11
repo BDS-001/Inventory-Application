@@ -9,11 +9,12 @@ async function getGames(req, res, next) {
         
         let games;
         if (filterType && filterValue) {
-            // implement
-            games = await db.getAllVideoGames() // temp
+            games = await db.getFilteredVideoGames(filterType, filterValue);
         } else {
             games = await db.getAllVideoGames();
         }
+
+        console.log(games, filterType, filterValue)
 
         res.render('index', {
             pageTitle: 'Video Game Inventory',
