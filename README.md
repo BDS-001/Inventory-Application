@@ -2,8 +2,6 @@
 
 A full-stack web application for managing a video game collection. Built with Node.js, Express, PostgreSQL, and EJS templating.
 
-![Gaming Inventory Demo](https://github.com/yourusername/video-game-inventory/raw/main/demo.gif)
-
 ## Features
 
 - 🎮 CRUD operations for video games
